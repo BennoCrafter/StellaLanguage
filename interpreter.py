@@ -4,7 +4,8 @@ from evaluator import Evaluator
 
 
 def main():
-    code = 'a = 4; b = 10; result = a + b; write 55;'
+    #code = 'a = 4; b = 10; result = a + b; write 55;'
+    code = 'x = 4; for x with i { write "Result:"; write i; }; write "end";'
     lexer = Lexer()
     tokens = lexer.tokenize(code)
 

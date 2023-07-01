@@ -18,6 +18,17 @@ class Evaluator:
                         print(variables[var_name])
                     else:
                         raise NameError(f"Variable '{var_name}' is not defined.")
+            elif node[0] == "for_loop":
+                variables[node[2][1]] = 1
+                commands = node[3]
+                if node[1][0] == "INTEGER":
+                    iteration = node[1][0]
+                else:
+                    iteration = variables[node[1][1]]
+                for i in range(int(iteration)):
+                    for element in commands:
+                        visit(element)
+                    variables[node[2][1]] += 1
             else:
                 raise ValueError(f"Unknown node type: {node[0]}")
 

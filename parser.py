@@ -20,7 +20,7 @@ class Parser:
                 consume('ASSIGN')
                 expr_value = expression()
                 consume('SEMICOLON')
-                return ('assign', var_name, expr_value)
+                return 'assign', var_name, expr_value
             elif tokens[0][0] == 'WRITE':
                 consume('WRITE')
                 try:
@@ -31,6 +31,8 @@ class Parser:
                     content = consume(["STRING", "INTEGER"])
                     consume("SEMICOLON")
                     return ("write", (content[0], content[1]))
+            elif tokens[0][0] == "FOR":
+                return expression()
             else:
                 raise SyntaxError(f"Unexpected token: {tokens[0][0]}")
 
@@ -60,6 +62,18 @@ class Parser:
                 return "string", str(consume("STRING")[1])
             elif tokens[0][0] == 'VAR':
                 return 'variable', consume('VAR')[1]
+            elif tokens[0][0] == "FOR":
+                consume("FOR")
+                iteration = consume(["INTEGER", "VAR"])
+                consume("WITH")
+                var_to_iterate = consume("VAR")
+                consume("LBRACE")
+                loop_statements = []
+                while tokens[0][0] != "RBRACE":
+                    loop_statements.append(statement())
+                consume("RBRACE")
+                consume("SEMICOLON")
+                return ("for_loop", iteration, var_to_iterate, loop_statements)
             else:
                 raise SyntaxError(f"Unexpected token: {tokens[0][0]}")
 

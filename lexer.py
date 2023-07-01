@@ -7,6 +7,8 @@ class Lexer:
         self.token_specification = [
             ('INTEGER', r'\d+'),
             ("STRING", r'"[^"]*"'),
+            ("FOR", r'for'),
+            ("WITH", r'with'),
             ('FLOAT', r'\d+\.\d+'),
             ('WRITE', r'write'),
             ('VAR', r'[a-zA-Z][a-zA-Z0-9]*'),
@@ -16,6 +18,8 @@ class Lexer:
             ('MINUS', r'-'),
             ('TIMES', r'\*'),
             ('DIVIDE', r'/'),
+            ('LBRACE', r'{'),
+            ('RBRACE', r'}'),
         ]
         self.token_regex = '|'.join('(?P<%s>%s)' % pair for pair in self.token_specification)
 
