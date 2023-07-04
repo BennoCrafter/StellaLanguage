@@ -3,9 +3,10 @@ from parser import Parser
 from evaluator import Evaluator
 
 
-def main():
-    #code = 'a = 4; b = 10; result = a + b; write 55;'
-    code = 'x = 4; for x with i { write "Result:"; write i; }; write "end";'
+def main(filename):
+    with open(path  +filename, "r") as file_code:
+        code = file_code.read()
+        file_code.close()
     lexer = Lexer()
     tokens = lexer.tokenize(code)
 
@@ -18,4 +19,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    path = "ExampleCodes/"
+    main("if_in_for_loop.st")

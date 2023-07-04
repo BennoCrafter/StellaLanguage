@@ -33,6 +33,8 @@ class Parser:
                     return ("write", (content[0], content[1]))
             elif tokens[0][0] == "FOR":
                 return expression()
+            elif tokens[0][0] == "IF":
+                return expression()
             else:
                 raise SyntaxError(f"Unexpected token: {tokens[0][0]}")
 
@@ -57,11 +59,11 @@ class Parser:
 
         def factor():
             if tokens[0][0] == 'INTEGER':
-                return 'integer', int(consume('INTEGER')[1])
+                return 'INTEGER', int(consume('INTEGER')[1])
             elif tokens[0][0] == "STRING":
-                return "string", str(consume("STRING")[1])
+                return "STRING", str(consume("STRING")[1])
             elif tokens[0][0] == 'VAR':
-                return 'variable', consume('VAR')[1]
+                return 'VAR', consume('VAR')[1]
             elif tokens[0][0] == "FOR":
                 consume("FOR")
                 iteration = consume(["INTEGER", "VAR"])
@@ -72,8 +74,18 @@ class Parser:
                 while tokens[0][0] != "RBRACE":
                     loop_statements.append(statement())
                 consume("RBRACE")
-                consume("SEMICOLON")
                 return ("for_loop", iteration, var_to_iterate, loop_statements)
+            elif tokens[0][0] == "IF":
+                consume("IF")
+                first_param = consume(["INTEGER", "STRING", "VAR"])
+                type = consume(["EQUAL", "NOTEQUAL", "LESS_THAN", "GREATER_THAN"])[0]
+                second_param = consume(["INTEGER", "STRING", "VAR"])
+                consume("LBRACE")
+                if_statments = []
+                while tokens[0][0] != "RBRACE":
+                    if_statments.append(statement())
+                consume("RBRACE")
+                return "if_statement", (type, (first_param, second_param)), if_statments
             else:
                 raise SyntaxError(f"Unexpected token: {tokens[0][0]}")
 
