@@ -10,16 +10,19 @@ class Evaluator:
                 var_name, expr = node[1], node[2]
                 variables[var_name] = (evaluate_expression(expr), node[2][0])
             elif node[0] == 'write':
-                if node[1][0] == "INTEGER" or node[1][0] == "STRING":
-                    print(node[1][1].replace('"', ''))
-                else:
-                    var_name = node[1][1]
-                    if var_name in variables:
-                        print(variables[var_name][0])
-                    else:
-                        raise NameError(f"Variable '{var_name}' is not defined.")
+                content = ""
+                for stat in node[1]:
+                    if stat[0] == "STRING" or stat[0] == "INTEGER":
+                        content += stat[1].replace("\"", "") + " "
+                    elif stat[0] == "VAR":
+                        var_name = stat[1]
+                        if var_name in variables:
+                            content += str(variables[var_name][0]) + " "
+                        else:
+                            raise NameError(f"Variable '{var_name}' is not defined.")
+                print(content)
             elif node[0] == "for_loop":
-                variables[node[2][1]] = (1, "integer")
+                variables[node[2]] = (1, "INTEGER")
                 commands = node[3]
                 if node[1][0] == "INTEGER":
                     iteration = node[1][1]
@@ -28,7 +31,7 @@ class Evaluator:
                 for i in range(int(iteration)):
                     for element in commands:
                         visit(element)
-                    variables[node[2][1]] = (variables[node[2][1]][0] + 1, variables[node[2][1]][1])
+                    variables[node[2]] = (variables[node[2]][0] + 1, variables[node[2]][1])
             elif node[0] == "if_statement":
                 condition = node[1]
                 commands = node[2]
@@ -43,6 +46,8 @@ class Evaluator:
                 return int(expr[1])
             if expr[0] == 'STRING':
                 return expr[1]
+            elif expr[0] == "input":
+                return input(expr[1].replace("\"", ""))
             elif expr[0] == 'VAR':
                 var_name = expr[1]
                 if var_name in list(variables.keys()):

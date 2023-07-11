@@ -1,8 +1,7 @@
 x = 4;
 y = 5;
 for x with i {
-  write "Result:";
-  write i;
+  write "Result:", i;
 }
 write "end of loop";
 if x == 4 {

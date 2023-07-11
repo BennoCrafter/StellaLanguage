@@ -16,6 +16,8 @@ class Lexer:
             ("LESS_THAN", r'<'),
             ('FLOAT', r'\d+\.\d+'),
             ('WRITE', r'write'),
+            ("INPUT", r"input"),
+            ("ADD_STRING", r","),
             ('VAR', r'[a-zA-Z][a-zA-Z0-9]*'),
             ('ASSIGN', r'='),
             ('SEMICOLON', r';'),

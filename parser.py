@@ -20,21 +20,42 @@ class Parser:
                 consume('ASSIGN')
                 expr_value = expression()
                 consume('SEMICOLON')
-                return 'assign', var_name, expr_value
+                return ('assign', var_name, expr_value)
             elif tokens[0][0] == 'WRITE':
+                content = []
                 consume('WRITE')
-                try:
-                    var_name = consume('VAR')[1]
-                    consume('SEMICOLON')
-                    return ('write', ("var", var_name))  # Change 'write' to 'print' here
-                except:
-                    content = consume(["STRING", "INTEGER"])
-                    consume("SEMICOLON")
-                    return ("write", (content[0], content[1]))
+                while tokens[0][0] != "SEMICOLON":
+                    if tokens[0][0] != "ADD_STRING":
+                        content.append(tokens[0])
+                    consume(["STRING", "INTEGER", "ADD_STRING", "VAR"])
+                consume("SEMICOLON")
+                return ('write', content)
             elif tokens[0][0] == "FOR":
-                return expression()
+                consume("FOR")
+                iteration = consume(["INTEGER", "VAR"])
+                consume("WITH")
+                var_to_iterate = consume("VAR")[1]
+                consume("LBRACE")
+                loop_statements = []
+                while tokens[0][0] != "RBRACE":
+                    loop_statements.append(statement())
+                consume("RBRACE")
+                return ('for_loop', iteration, var_to_iterate, loop_statements)
             elif tokens[0][0] == "IF":
-                return expression()
+                consume("IF")
+                first_param = consume(["INTEGER", "STRING", "VAR"])
+                operator = consume(["EQUAL", "NOTEQUAL", "LESS_THAN", "GREATER_THAN"])[0]
+                second_param = consume(["INTEGER", "STRING", "VAR"])
+                consume("LBRACE")
+                if_statements = []
+                while tokens[0][0] != "RBRACE":
+                    if_statements.append(statement())
+                consume("RBRACE")
+                return ('if_statement', (operator, (first_param, second_param)), if_statements)
+            elif tokens[0][0] == "INPUT":
+                consume("INPUT")
+                s = consume("STRING")[1]
+                return ("input", s)
             else:
                 raise SyntaxError(f"Unexpected token: {tokens[0][0]}")
 
@@ -45,7 +66,6 @@ class Parser:
                 consume(operator)
                 term_value2 = term()
                 term_value = ('binop', operator, term_value, term_value2)
-
             return term_value
 
         def term():
@@ -59,33 +79,15 @@ class Parser:
 
         def factor():
             if tokens[0][0] == 'INTEGER':
-                return 'INTEGER', int(consume('INTEGER')[1])
+                return ('INTEGER', int(consume('INTEGER')[1]))
             elif tokens[0][0] == "STRING":
-                return "STRING", str(consume("STRING")[1])
+                return ("STRING", str(consume("STRING")[1]))
             elif tokens[0][0] == 'VAR':
-                return 'VAR', consume('VAR')[1]
-            elif tokens[0][0] == "FOR":
-                consume("FOR")
-                iteration = consume(["INTEGER", "VAR"])
-                consume("WITH")
-                var_to_iterate = consume("VAR")
-                consume("LBRACE")
-                loop_statements = []
-                while tokens[0][0] != "RBRACE":
-                    loop_statements.append(statement())
-                consume("RBRACE")
-                return ("for_loop", iteration, var_to_iterate, loop_statements)
-            elif tokens[0][0] == "IF":
-                consume("IF")
-                first_param = consume(["INTEGER", "STRING", "VAR"])
-                type = consume(["EQUAL", "NOTEQUAL", "LESS_THAN", "GREATER_THAN"])[0]
-                second_param = consume(["INTEGER", "STRING", "VAR"])
-                consume("LBRACE")
-                if_statments = []
-                while tokens[0][0] != "RBRACE":
-                    if_statments.append(statement())
-                consume("RBRACE")
-                return "if_statement", (type, (first_param, second_param)), if_statments
+                return ('VAR', consume('VAR')[1])
+            elif tokens[0][0] == "INPUT":
+                consume("INPUT")
+                s = consume("STRING")[1]
+                return ("input", s)
             else:
                 raise SyntaxError(f"Unexpected token: {tokens[0][0]}")
 
